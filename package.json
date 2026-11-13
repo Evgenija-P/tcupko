@@ -35,5 +35,8 @@
     "tailwindcss": "4.3.3",
     "typescript": "^5",
     "wrangler": "^4.161.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261110.1": true
   }
 }

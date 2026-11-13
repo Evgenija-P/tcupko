@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 import { PRODUCTION_HOST } from "./src/constants/site";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
+  // No cacheComponents / partialPrefetching: on the Workers runtime they hang the request
+  // (Next relies on setTimeout semantics Workers do not provide) → Error 1101.
   turbopack: {
     rules: {
       "*.css": {
