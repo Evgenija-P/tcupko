@@ -1,16 +1,9 @@
-// TODO(owner): real phone, hours, pickup address, email, legal name, social links.
 export const contacts = {
-  phone: "+380 XX XXX XX XX",
-  phoneHref: "",
-  hours: "Пн–Пт 9:00–18:00",
-  pickup: "Самовивіз: [адреса складу]",
+  phone: "+380 63 204 66 48",
+  phoneHref: "tel:+380632046648",
+  hours: "Пн–Пт 8:00–20:00, Сб–Нд 10:00–20:00",
+  pickup:
+    "Самовивіз: ринок «Курчатовський», вул. 128-ї Бригади Тероборони, 7, Дніпро. Також у центрі та на лівому березі — за домовленістю",
   email: "info@tcupko.shop",
-  legal: "ФОП [ПІБ]",
+  legal: "ФОП Подузова Євгенія Анатоліївна",
 } as const;
-
-/** Empty href = link is hidden until the owner provides it. */
-export const socialLinks: { label: string; href: string }[] = [
-  { label: "Instagram", href: "" },
-  { label: "Facebook", href: "" },
-  { label: "Telegram", href: "" },
-];

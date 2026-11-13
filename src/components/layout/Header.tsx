@@ -3,6 +3,8 @@ import { LayoutGrid, Search, ShoppingCart } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/base/Container";
 import { contacts } from "@/constants/contacts";
+import { FavoritesLink } from "@/components/favorites/FavoritesLink";
+import { HeaderAction } from "./HeaderAction";
 import { Logo } from "./Logo";
 
 // TODO(feat/cart): cart counter + total; TODO(feat/catalog): mega menu, mobile catalog drawer.
@@ -33,7 +35,10 @@ export function Header() {
           </a>
           <span className="text-xs text-ink-muted">{contacts.hours}</span>
         </div>
-        <CartLink withLabel />
+        <div className="flex items-center gap-2">
+          <FavoritesLink />
+          <HeaderAction href="/cart" icon={<ShoppingCart aria-hidden />} label="Кошик" />
+        </div>
       </Container>
 
       {/* Mobile */}
@@ -43,23 +48,14 @@ export function Header() {
         <Link href="/search" aria-label="Пошук" className="p-2 text-ink">
           <Search className="size-6" aria-hidden />
         </Link>
-        <CartLink />
+        <FavoritesLink showLabel={false} />
+        <HeaderAction
+          href="/cart"
+          icon={<ShoppingCart aria-hidden />}
+          label="Кошик"
+          showLabel={false}
+        />
       </Container>
     </header>
-  );
-}
-
-function CartLink({ withLabel = false }: { withLabel?: boolean }) {
-  return (
-    <Link
-      href="/cart"
-      aria-label={withLabel ? undefined : "Кошик"}
-      className="flex shrink-0 flex-col items-center gap-0.5 px-2 py-1 text-ink"
-    >
-      <span className="flex size-7 items-center justify-center">
-        <ShoppingCart className="size-6" aria-hidden />
-      </span>
-      {withLabel && <span className="text-xs">Кошик</span>}
-    </Link>
   );
 }

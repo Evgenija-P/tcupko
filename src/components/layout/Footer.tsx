@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { Clock, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/base/Container";
-import { contacts, socialLinks } from "@/constants/contacts";
+import { contacts } from "@/constants/contacts";
 import { catalogLinks, customerLinks, type NavLink } from "@/constants/navigation";
 import { Logo } from "./Logo";
 
 export function Footer() {
-  const socials = socialLinks.filter((s) => s.href);
-
   return (
     <footer className="mt-auto bg-surface pt-14 pb-8">
       <Container className="flex flex-col gap-10">
@@ -17,22 +15,6 @@ export function Footer() {
             <p className="text-sm text-ink-muted">
               Засоби індивідуального захисту та витратні матеріали для майстерень і виробництв.
             </p>
-            {socials.length > 0 && (
-              <ul className="flex flex-wrap gap-2">
-                {socials.map((s) => (
-                  <li key={s.label}>
-                    <a
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded-sm border border-line bg-page px-2.5 py-1 text-xs text-ink-muted hover:text-ink"
-                    >
-                      {s.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <LinkColumn title="Каталог" links={catalogLinks} />
@@ -46,10 +28,10 @@ export function Footer() {
                 <a href={contacts.phoneHref || undefined}>{contacts.phone}</a>
               </li>
               <li className="flex items-center gap-2">
-                <Clock className="size-5 shrink-0" aria-hidden />
+                <Clock className="size-5 shrink-0 self-start" aria-hidden />
                 {contacts.hours}
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-start gap-2">
                 <MapPin className="size-5 shrink-0" aria-hidden />
                 {contacts.pickup}
               </li>
