@@ -23,7 +23,8 @@ document, this document wins.
 
 ## This Project
 
-- **tcupko** — online shop. Design: Figma file `gKoxT2bNDG62U87da3fceN` (1:1).
+- **tcupko** («Цупко») — online shop of PPE and work consumables. Design: Figma file
+  `j2QGPnHMNhNLILfHKyDile` (1:1; pages "05 Акаунт" and "07 Адмінка" are not release 1).
 - Stack: Next.js (App Router) + React 19 + TypeScript + Tailwind CSS v4, npm.
   Hosting: Cloudflare Workers via `@opennextjs/cloudflare`. DB: Cloudflare D1 + Drizzle.
   Images: R2. Email: Resend. Plan and decisions: `docs/PLAN.md`.
@@ -33,10 +34,13 @@ document, this document wins.
 
 ## Business rules (source of truth for code)
 
-- Order flow: cart → order form → order saved in D1 → emails. No checkout/payment gateway.
-- Payment: IBAN transfer (email with requisites) or cash on delivery (COD).
-- Nova Poshta: IBAN or COD. Ukrposhta: **IBAN only** (enforced on the server too).
-- Nova Poshta: branches and parcel lockers only (no courier). No free shipping.
+- Order flow: cart → guest order form → order saved in D1 → customer email (Resend) +
+  owner Telegram. No checkout/payment gateway, no accounts. Owner gets Telegram only, never email.
+- Carrier ↔ payment (enforced on the server too): Nova Poshta (branch/locker, no courier) —
+  IBAN or COD; Ukrposhta — IBAN only; Meest — IBAN only; pickup (by arrangement) — IBAN
+  prepayment or cash. No free shipping.
+- Products have variants (size or none), stock lives on the variant. Filters are built from
+  product attributes of the current category; tags = cross-category "purpose".
 - Shipping days: Wednesday and Saturday, cut-off 11:00 Europe/Kyiv.
 - Discount: 10% on the whole order if any product qty ≥ 15 OR cart subtotal ≥ 3500 UAH;
   never stacked.
