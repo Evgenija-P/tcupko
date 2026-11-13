@@ -1,5 +1,5 @@
 /**
- * Catalog JSON → SQL for D1 (`.wrangler/seed.sql`). Run via `npm run db:seed:local|remote`.
+ * Catalog JSON в†’ SQL for D1 (`.wrangler/seed.sql`). Run via `npm run db:seed:local|remote`.
  *
  * Safe to re-run: everything is an upsert keyed by slug / sku / (product, size).
  * - Prices, names, descriptions, flags, attributes, tags, images are overwritten from the file.
@@ -45,7 +45,7 @@ type Catalog = {
 
 // Several files are merged (e.g. catalog.json + demo-products.json for the local DB).
 const files = process.argv.slice(2);
-if (!files.length) throw new Error("Usage: node scripts/seed.ts <catalog.json> [more.json…]");
+if (!files.length) throw new Error("Usage: node scripts/seed.mts <catalog.json> [more.jsonвЂ¦]");
 const catalog: Catalog = { categories: [], tags: [], products: [] };
 for (const f of files) {
   const part = JSON.parse(readFileSync(f, "utf8")) as Partial<Catalog>;
@@ -81,7 +81,7 @@ for (const p of catalog.products) {
     errors.push(`${at}: mix of sized and size-less variants`);
   for (const v of p.variants) {
     if (!Number.isInteger(v.stock) || v.stock < 0)
-      errors.push(`${at}: stock must be an integer ≥ 0`);
+      errors.push(`${at}: stock must be an integer в‰Ґ 0`);
   }
   for (const t of p.tags ?? []) if (!tagSlugs.has(t)) errors.push(`${at}: unknown tag ${t}`);
 }
@@ -139,7 +139,7 @@ ON CONFLICT (product_id, size) DO UPDATE SET price = excluded.price, sort = excl
     );
   });
   const sizes = p.variants.map((v) => q(v.size ?? "")).join(", ");
-  // a removed size can still be referenced by past orders → keep the row, just empty its stock
+  // a removed size can still be referenced by past orders в†’ keep the row, just empty its stock
   sql.push(
     `UPDATE product_variants SET stock = 0 WHERE product_id = ${id} AND size NOT IN (${sizes});`,
   );

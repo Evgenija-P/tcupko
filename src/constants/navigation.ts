@@ -9,6 +9,7 @@ export const catalogLinks: NavLink[] = [
   { label: "Абразиви", href: "/catalog/abrazyvy" },
   { label: "Зварювання", href: "/catalog/zvariuvannia" },
   { label: "Захист голови та слуху", href: "/catalog/zakhyst-holovy" },
+  { label: "Інструмент та господарські товари", href: "/catalog/hospodarski-tovary" },
 ];
 
 export const customerLinks: NavLink[] = [

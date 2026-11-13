@@ -18,8 +18,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply tcupko --local",
     "db:migrate:remote": "wrangler d1 migrations apply tcupko --remote",
-    "db:seed:local": "node scripts/seed.ts data/catalog.json data/demo-products.json && wrangler d1 execute tcupko --local --file .wrangler/seed.sql",
-    "db:seed:remote": "node scripts/seed.ts data/catalog.json && wrangler d1 execute tcupko --remote --file .wrangler/seed.sql"
+    "db:seed:local": "node scripts/seed.mts data/catalog.json data/demo-products.json && wrangler d1 execute tcupko --local --file .wrangler/seed.sql",
+    "db:seed:remote": "node scripts/seed.mts data/catalog.json && wrangler d1 execute tcupko --remote --file .wrangler/seed.sql"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.17",
