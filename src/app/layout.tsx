@@ -5,6 +5,9 @@ import { Footer } from "@/components/layout/Footer";
 import { SITE_URL } from "@/constants/site";
 import "./globals.css";
 
+// Pages read D1 per request (catalog, stock); there is no DB binding at build time.
+export const dynamic = "force-dynamic";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "cyrillic"],

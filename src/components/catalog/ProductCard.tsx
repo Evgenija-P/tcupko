@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { Badge } from "@/components/ui/Badge";
 import { DISCOUNT_MIN_QTY, DISCOUNT_PERCENT } from "@/constants/pricing";
@@ -13,19 +13,17 @@ export type ProductCardData = {
   sku: string;
   price: number; // kopecks
   oldPrice: number | null; // kopecks, set = on sale
-  stock: number;
+  stock: number; // sum over variants
+  /** true → the size is chosen on the product page, the card links there instead of adding. */
+  hasSizes: boolean;
+  /** The only/first variant — what "В кошик" adds when there are no sizes. */
+  variantId: number;
   image: { src: string; alt: string } | null;
   isNew: boolean;
   isBestseller: boolean;
 };
 
-type Props = {
-  product: ProductCardData;
-  /** "В кошик" button — a client component supplied by the cart feature. */
-  cta: ReactNode;
-};
-
-export function ProductCard({ product: p, cta }: Props) {
+export function ProductCard({ product: p }: { product: ProductCardData }) {
   const href = `/product/${p.slug}`;
   const salePercent = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
@@ -43,7 +41,7 @@ export function ProductCard({ product: p, cta }: Props) {
             />
           )}
         </Link>
-        <div className="absolute top-2 left-2 flex gap-1">
+        <div className="absolute top-2 right-14 left-2 flex flex-wrap gap-1">
           {p.oldPrice && <Badge tone="sale">Акція</Badge>}
           {salePercent > 0 && <Badge tone="sale">−{salePercent}%</Badge>}
           {p.isNew && <Badge tone="new">Новинка</Badge>}
@@ -81,7 +79,7 @@ export function ProductCard({ product: p, cta }: Props) {
       <p className="mt-auto flex items-center gap-1.5 text-xs">
         <span className="size-2 rounded-full bg-success" aria-hidden />В наявності: {p.stock} шт
       </p>
-      {cta}
+      <AddToCartButton href={href} variantId={p.variantId} stock={p.stock} hasSizes={p.hasSizes} />
     </article>
   );
 }
