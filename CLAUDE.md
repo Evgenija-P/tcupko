@@ -9,7 +9,7 @@ document, this document wins.
 - `reuse-before-build` — what already exists; reuse before building
 - `structure-and-element-anti-patterns` — semantic markup, one H1, no `div onClick`. Any JSX
 - `tailwind-token-naming` — tokens in `@theme` never reuse stock Tailwind names
-- `nextjs-image-weight` — `next/image`, `sizes`, `priority`, photos in R2 pre-compressed
+- `nextjs-image-weight` — `next/image`, `sizes`, `priority`, photos in `public/products/` pre-compressed
 - `nextjs-developer`, `nextjs-anti-patterns`, `react-expert` — App Router / React 19
 - `seo-skill` — metadata, canonical, sitemap/robots, `Product` JSON-LD
 - `sitemap-integrity` — only public, 200, canonical, indexable URLs in the sitemap
@@ -27,7 +27,7 @@ document, this document wins.
   `j2QGPnHMNhNLILfHKyDile` (1:1; pages "05 Акаунт" and "07 Адмінка" are not release 1).
 - Stack: Next.js (App Router) + React 19 + TypeScript + Tailwind CSS v4, npm.
   Hosting: Cloudflare Workers via `@opennextjs/cloudflare`. DB: Cloudflare D1 + Drizzle.
-  Images: R2. Email: Resend. Plan and decisions: `docs/PLAN.md`.
+  Product photos: in the repo, `public/products/` (R2 comes with the admin). Email: Resend. Plan and decisions: `docs/PLAN.md`.
 - No online payment, no customer accounts, no admin in release 1.
 - Branches: `main` = production, `dev` = current development, task branches from `dev`
   (`feat/…`, `fix/…`, `chore/…`) → PR into `dev`; `dev` → `main` = release.
@@ -71,5 +71,12 @@ document, this document wins.
 
 - After a change: `npm run lint`. Before **every** commit: `npm run build` (see
   `pre-commit-review`). Checks are run with the user's consent.
+- **Any failed check = no commit** (tsc, lint, prettier, build, preview — each checked on its own).
+- **Builds do not execute code on Workers.** `npm run preview` + HTTP 200 on key pages + no
+  runtime errors is mandatory before merging into `main` and after changes to config,
+  dependencies, server code, DB or env. A check that could not run is reported as such and
+  blocks the merge.
+- New Next.js defaults/flags are checked for OpenNext/Workers compatibility before use
+  (`cacheComponents` / `partialPrefetching` hang on Workers → Error 1101).
 - Commits only when asked, files added by name, messages in Ukrainian.
 - Answers in Ukrainian, short. No intros/outros; show only changed code. Missing context — ask.

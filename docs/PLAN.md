@@ -11,7 +11,7 @@
 | Хостинг             | Cloudflare Workers + `@opennextjs/cloudflare`               | 100k запитів/добу, SSL, CDN, DDoS. Vercel Hobby заборонює комерційне використання |
 | Деплой              | Workers Builds з GitHub: `main` → прод, `dev` → preview URL | без CI-конфігів                                                                   |
 | БД                  | Cloudflare D1 (SQLite) + Drizzle ORM                        | 5 GB, міграції в репо                                                             |
-| Фото                | Cloudflare R2                                               | 10 GB, без плати за трафік                                                        |
+| Фото                | У репо (`public/products/`), деплояться з сайтом            | без картки; R2 — разом з адмінкою в наступному релізі                             |
 | Листи покупцям      | Resend + React Email                                        | 3000/міс, 100/добу; потрібен домен                                                |
 | Сповіщення власниці | Telegram-бот (замовлення, «в один клік», форми)             | безкоштовно; на пошту власниці нічого не шлемо                                    |
 | Автоскасування      | Cloudflare Cron Trigger                                     | безкоштовно                                                                       |
@@ -73,7 +73,7 @@
   is_new, is_bestseller, sort, is_active)
 - `product_variants` (id, product_id, size NULL, price NULL, stock)
 - `product_attributes` (product_id, key, value) · `tags`, `product_tags`
-- `product_images` (product_id, r2_key, alt, sort)
+- `product_images` (product_id, path, alt, sort) — `path` відносно `public/products/`
 - `orders` (id, number, created_at, name, phone, email, carrier
   `np|ukrposhta|meest|pickup`, delivery JSON, payment `iban|cod|cash`, subtotal, discount,
   total, comment, status `new|paid|shipped|cancelled`, ship_date, pay_until,
@@ -82,7 +82,8 @@
 - `leads` (id, type `one_click|contact|wholesale`, name, phone, email, payload, created_at)
 
 Гроші — цілі копійки. Товар із сумарним залишком 0 зникає з каталогу й sitemap, сторінка → 404.
-Товари до адмінки: JSON/CSV у репо → `npm run db:seed`, фото → R2 скриптом.
+Товари до адмінки: JSON/CSV у репо → `npm run db:seed`, фото — у
+`public/products/` одним комітом (WebP, ≤ 1600px, ≤ 300 KB).
 
 ## Логіка замовлення
 
@@ -120,12 +121,12 @@
 ## Етапи (гілка на кожен, від `dev`)
 
 - [x] 0. Репо, `main`/`dev`, скіли, CLAUDE.md, план, макет переглянуто
-- [ ] 1. `chore/setup` — Next + TS + Tailwind + ESLint/Prettier, OpenNext; разом
-      налаштовуємо Cloudflare (Workers, D1, R2, Workers Builds main/dev); перший деплой;
-      noindex для не-прод хостів
+- [x] 1. `chore/setup` — Next + TS + Tailwind + ESLint/Prettier, OpenNext, Workers Builds
+      (main/dev), заглушка на `tcupko.evgenija-borisjuk.workers.dev`, noindex для не-прод хостів
 - [ ] 2. `feat/design-system` — токени, шрифти, UI-кіт, Header + мегаменю + мобільний
       каталог, Footer
-- [ ] 3. `feat/db` — схема, міграції, seed (товари, варіанти, характеристики, теги), R2
+- [ ] 3. `feat/db` — схема, міграції, seed (товари, варіанти, характеристики, теги);
+      створення D1 (потрібен `npx wrangler login` від власниці)
 - [ ] 4. `feat/catalog` — головна, категорія/підкатегорія, фільтри, сортування, пагінація
 - [ ] 5. `feat/product` — сторінка товару, галерея, розміри, таблиця розмірів, SEO (JSON-LD)
 - [ ] 6. `feat/search` — пошук і підказки
@@ -143,6 +144,6 @@
 
 ## Відкриті питання
 
-- Домен (потрібен до етапу 8: Resend, SEO).
+- Домен **tcupko.shop** куплено — підключити до Worker (Custom domain) і верифікувати в Resend.
 - Тексти «Про магазин», переваги, оферта, повернення — від власниці.
 - Іконки категорій: у Feather немає відповідних — надати або намалювати.
