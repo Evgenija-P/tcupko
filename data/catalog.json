@@ -1,0 +1,73 @@
+{
+  "categories": [
+    { "slug": "zakhyst-ochei", "name": "Захист очей та обличчя", "sort": 1 },
+    { "slug": "okuliary", "name": "Окуляри захисні", "parent": "zakhyst-ochei", "sort": 1 },
+    { "slug": "shchytky-maski", "name": "Щитки та маски", "parent": "zakhyst-ochei", "sort": 2 },
+
+    { "slug": "zakhyst-dykhannia", "name": "Захист органів дихання", "sort": 2 },
+    { "slug": "respiratory", "name": "Респіратори", "parent": "zakhyst-dykhannia", "sort": 1 },
+
+    { "slug": "zakhyst-ruk", "name": "Захист рук", "sort": 3 },
+    {
+      "slug": "rukavytsi-brezentovi",
+      "name": "Рукавиці брезентові",
+      "parent": "zakhyst-ruk",
+      "sort": 1
+    },
+    {
+      "slug": "kragy-zvariuvalnyka",
+      "name": "Краги зварювальника",
+      "parent": "zakhyst-ruk",
+      "sort": 2
+    },
+    {
+      "slug": "rukavychky-hb-pvkh",
+      "name": "Рукавички х/б з ПВХ",
+      "parent": "zakhyst-ruk",
+      "sort": 3
+    },
+    {
+      "slug": "rukavychky-nitrylovi",
+      "name": "Рукавички нітрилові та латексні",
+      "parent": "zakhyst-ruk",
+      "sort": 4
+    },
+
+    { "slug": "spetsodiah", "name": "Спецодяг", "sort": 4 },
+    { "slug": "fartukhy", "name": "Фартухи", "parent": "spetsodiah", "sort": 1 },
+    { "slug": "nalokitnyky", "name": "Налокітники", "parent": "spetsodiah", "sort": 2 },
+
+    { "slug": "abrazyvy", "name": "Абразиви", "sort": 5 },
+    { "slug": "vidrizni-kruhy", "name": "Відрізні круги", "parent": "abrazyvy", "sort": 1 },
+    { "slug": "shlifuvalni-kruhy", "name": "Шліфувальні круги", "parent": "abrazyvy", "sort": 2 },
+    { "slug": "shchitky", "name": "Щітки", "parent": "abrazyvy", "sort": 3 },
+
+    { "slug": "zvariuvannia", "name": "Зварювання", "sort": 6 },
+    { "slug": "elektrody", "name": "Електроди", "parent": "zvariuvannia", "sort": 1 },
+    {
+      "slug": "zvariuvalnyi-drit",
+      "name": "Зварювальний дріт",
+      "parent": "zvariuvannia",
+      "sort": 2
+    },
+
+    { "slug": "zakhyst-holovy", "name": "Захист голови та слуху", "sort": 7 },
+    { "slug": "berushi", "name": "Беруші", "parent": "zakhyst-holovy", "sort": 1 },
+
+    { "slug": "instrument", "name": "Інструмент та розхідники", "sort": 8 },
+    { "slug": "izolenta", "name": "Ізолента", "parent": "instrument", "sort": 1 },
+    { "slug": "markery", "name": "Маркери", "parent": "instrument", "sort": 2 },
+    { "slug": "ruletky", "name": "Рулетки", "parent": "instrument", "sort": 3 }
+  ],
+  "tags": [
+    { "slug": "zakhyst-ochei", "name": "Захист очей" },
+    { "slug": "zakhyst-dykhannia", "name": "Захист дихання" },
+    { "slug": "zakhyst-ruk", "name": "Захист рук" },
+    { "slug": "zakhyst-slukhu", "name": "Захист слуху" },
+    { "slug": "zvariuvannia", "name": "Зварювання" },
+    { "slug": "obrobka-metalu", "name": "Обробка металу" },
+    { "slug": "elektryka", "name": "Електрика" },
+    { "slug": "rozmitka", "name": "Розмітка та вимірювання" }
+  ],
+  "products": []
+}

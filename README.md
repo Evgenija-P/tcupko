@@ -8,6 +8,16 @@
 
 План: [docs/PLAN.md](docs/PLAN.md)
 
+## База (Cloudflare D1 + Drizzle)
+
+1. Змінила `src/db/schema.ts` → `npm run db:generate` (нова SQL-міграція в `drizzle/`).
+2. `npm run db:migrate:local` — локальна база; `npm run db:migrate:remote` — прод.
+3. Товари: `data/catalog.json` (категорії, теги, товари; ціни в гривнях) →
+   `npm run db:seed:local` (+ тестові `data/demo-products.json`) або `npm run db:seed:remote`.
+   Повторний запуск безпечний: оновлює ціни/описи, **не скидає залишки** існуючих варіантів
+   (для примусового залишку — `"forceStock": true` у варіанті). Товари, яких немає у файлі,
+   ховаються. Фото — у `public/products/`, у JSON шлях відносно цієї папки.
+
 ## Команди
 
 | Команда                                                       | Що робить                                                 |

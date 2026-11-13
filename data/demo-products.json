@@ -1,0 +1,97 @@
+{
+  "_comment": "LOCAL DB ONLY (npm run db:seed:local). Fake products to develop the catalog; never seeded to production.",
+  "products": [
+    {
+      "sku": "DEMO-001",
+      "slug": "demo-rukavytsi-brezentovi",
+      "name": "[DEMO] Рукавиці брезентові з подвійним наладонником",
+      "category": "rukavytsi-brezentovi",
+      "price": 42,
+      "oldPrice": 50,
+      "isBestseller": true,
+      "tags": ["zakhyst-ruk"],
+      "attributes": { "Матеріал": "брезент" },
+      "variants": [{ "stock": 58 }]
+    },
+    {
+      "sku": "DEMO-002",
+      "slug": "demo-kragy-spylkovi",
+      "name": "[DEMO] Краги зварювальника спилкові, 5 пальців",
+      "category": "kragy-zvariuvalnyka",
+      "price": 185,
+      "isNew": true,
+      "tags": ["zakhyst-ruk", "zvariuvannia"],
+      "attributes": { "Матеріал": "спилок" },
+      "variants": [{ "stock": 12 }]
+    },
+    {
+      "sku": "DEMO-003",
+      "slug": "demo-rukavychky-nitrylovi",
+      "name": "[DEMO] Рукавички нітрилові",
+      "category": "rukavychky-nitrylovi",
+      "price": 9,
+      "tags": ["zakhyst-ruk"],
+      "attributes": { "Матеріал": "нітрил" },
+      "variants": [
+        { "size": "M", "stock": 100 },
+        { "size": "L", "stock": 80 },
+        { "size": "XL", "stock": 0 }
+      ]
+    },
+    {
+      "sku": "DEMO-004",
+      "slug": "demo-krug-vidriznyi-125",
+      "name": "[DEMO] Круг відрізний по металу 125×1,0×22,2",
+      "category": "vidrizni-kruhy",
+      "price": 24,
+      "isBestseller": true,
+      "tags": ["obrobka-metalu"],
+      "attributes": { "Діаметр": "125 мм", "Товщина": "1,0 мм" },
+      "variants": [{ "stock": 300 }]
+    },
+    {
+      "sku": "DEMO-005",
+      "slug": "demo-krug-vidriznyi-230",
+      "name": "[DEMO] Круг відрізний по металу 230×2,0×22,2",
+      "category": "vidrizni-kruhy",
+      "price": 55,
+      "tags": ["obrobka-metalu"],
+      "attributes": { "Діаметр": "230 мм", "Товщина": "2,0 мм" },
+      "variants": [{ "stock": 40 }]
+    },
+    {
+      "sku": "DEMO-006",
+      "slug": "demo-elektrody-3mm",
+      "name": "[DEMO] Електроди 3 мм, 2,5 кг",
+      "category": "elektrody",
+      "price": 320,
+      "oldPrice": 360,
+      "tags": ["zvariuvannia"],
+      "attributes": { "Діаметр": "3 мм" },
+      "variants": [{ "stock": 15 }]
+    },
+    {
+      "sku": "DEMO-007",
+      "slug": "demo-fartukh-zvariuvalnyka",
+      "name": "[DEMO] Фартух зварювальника спилковий",
+      "category": "fartukhy",
+      "price": 450,
+      "isNew": true,
+      "tags": ["zvariuvannia"],
+      "attributes": { "Матеріал": "спилок" },
+      "variants": [
+        { "size": "L", "stock": 4 },
+        { "size": "XL", "stock": 2 }
+      ]
+    },
+    {
+      "sku": "DEMO-008",
+      "slug": "demo-izolenta-pvkh",
+      "name": "[DEMO] Ізолента ПВХ 19 мм × 20 м",
+      "category": "izolenta",
+      "price": 28,
+      "tags": ["elektryka"],
+      "variants": [{ "stock": 200 }]
+    }
+  ]
+}

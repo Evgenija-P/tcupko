@@ -16,6 +16,14 @@
       "service": "tcupko",
     },
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tcupko",
+      "database_id": "f2400a59-7248-4b91-aba2-edb08f04a70e",
+      "migrations_dir": "drizzle",
+    },
+  ],
   "images": {
     // Enable image optimization
     // see https://opennext.js.org/cloudflare/howtos/image
