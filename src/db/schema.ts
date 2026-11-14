@@ -109,6 +109,21 @@ export const productTags = sqliteTable(
   (t) => [primaryKey({ columns: [t.productId, t.tagId] })],
 );
 
+/** Requests that are not orders: "buy in one click", contact form, wholesale form. */
+export const leads = sqliteTable("leads", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  type: text({ enum: ["one_click", "contact", "wholesale"] }).notNull(),
+  name: text(),
+  phone: text().notNull(),
+  email: text(),
+  /** one_click: { variantId, qty, productName, size, price }; forms: { message } */
+  payload: text({ mode: "json" }).$type<Record<string, unknown>>(),
+  createdAt: integer({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  ownerNotifiedAt: integer({ mode: "timestamp" }),
+});
+
 /** `path` is relative to `public/products/`. */
 export const productImages = sqliteTable(
   "product_images",
