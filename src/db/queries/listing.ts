@@ -8,8 +8,11 @@ import { available, selectCards, toCard } from "./catalog";
 
 export const PAGE_SIZE = 24;
 
-/** `categoryIds` = the category and its children; undefined = whole catalog. */
-export type Scope = { categoryIds?: number[] };
+/**
+ * `categoryIds` = the category and its children; undefined = whole catalog.
+ * `words` = normalised search words (see searchWords); every word must occur.
+ */
+export type Scope = { categoryIds?: number[]; words?: string[] };
 
 export type FacetValue = { value: string; label: string; count: number };
 export type Facet = {
@@ -26,10 +29,16 @@ const inList = (values: string[]) =>
     sql`, `,
   );
 
-function scopeWhere(scope: Scope): SQL | undefined {
+/** LIKE pattern with %, _ and \ escaped (user input). */
+const likeContains = (w: string) => `%${w.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+
+export function scopeWhere(scope: Scope): SQL | undefined {
   return and(
     available,
     scope.categoryIds ? inArray(products.categoryId, scope.categoryIds) : undefined,
+    ...(scope.words ?? []).map(
+      (w) => sql`${products.searchText} LIKE ${likeContains(w)} ESCAPE '\\'`,
+    ),
   );
 }
 

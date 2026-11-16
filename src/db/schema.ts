@@ -43,6 +43,11 @@ export const products = sqliteTable(
     isBestseller: integer({ mode: "boolean" }).notNull().default(false),
     sort: integer().notNull().default(0),
     isActive: integer({ mode: "boolean" }).notNull().default(true),
+    /**
+     * Lower-cased name + sku + category + attribute values (see `toSearchText`). SQLite's
+     * LIKE/lower() are case-insensitive for ASCII only, so Cyrillic is normalised in JS.
+     */
+    searchText: text().notNull().default(""),
   },
   (t) => [
     index("products_category_idx").on(t.categoryId),

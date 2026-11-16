@@ -8,11 +8,18 @@ import { AutoSubmitForm } from "./AutoSubmitForm";
 import { ProductCard } from "./ProductCard";
 import { SortSelect } from "./SortSelect";
 
-type Props = { path: string; scope: Scope; searchParams: RawSearchParams };
+type Props = {
+  path: string;
+  scope: Scope;
+  searchParams: RawSearchParams;
+  /** Params that filters must not drop, e.g. `{ q }` on /search. */
+  keep?: Record<string, string>;
+};
 
 /** Filters + sort + grid + pagination (Figma "Б · Рукавиці брезентові"). */
-export async function ProductListing({ path, scope, searchParams: sp }: Props) {
+export async function ProductListing({ path, scope, searchParams: sp, keep = {} }: Props) {
   const params = parseListingParams(sp);
+  const resetHref = listingHref(path, keep);
   const [{ items, total }, facets] = await Promise.all([
     listProducts(scope, params),
     getFacets(scope),
@@ -55,6 +62,9 @@ export async function ProductListing({ path, scope, searchParams: sp }: Props) {
       id="filters"
       className="mt-4 hidden flex-col divide-y divide-line-subtle peer-checked:flex lg:mt-0 lg:flex"
     >
+      {Object.entries(keep).map(([k, v]) => (
+        <input key={k} type="hidden" name={k} value={v} />
+      ))}
       <fieldset className="pb-4">
         <legend className="mb-3 font-medium">Ціна, ₴</legend>
         <div className="flex gap-3">
@@ -176,7 +186,7 @@ export async function ProductListing({ path, scope, searchParams: sp }: Props) {
               </li>
             ))}
             <li>
-              <Link href={path} className="px-2 text-xs font-medium text-ink-accent">
+              <Link href={resetHref} className="px-2 text-xs font-medium text-ink-accent">
                 Скинути все
               </Link>
             </li>
@@ -194,7 +204,7 @@ export async function ProductListing({ path, scope, searchParams: sp }: Props) {
         ) : (
           <div className="flex flex-col items-center gap-4 rounded-xl bg-surface p-10 text-center">
             <p className="text-lg font-medium">Немає товарів за цими фільтрами</p>
-            <Link href={path} className={buttonClass("secondary")}>
+            <Link href={resetHref} className={buttonClass("secondary")}>
               Скинути фільтри
             </Link>
           </div>

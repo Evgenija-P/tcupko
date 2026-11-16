@@ -98,6 +98,20 @@ const q = (v: string | number | boolean | null | undefined): string => {
   return `'${v.replaceAll("'", "''")}'`;
 };
 const kop = (uah: number | undefined) => (uah === undefined ? null : Math.round(uah * 100));
+// KEEP IN SYNC with toSearchText in src/lib/search-text.ts
+const norm = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[’'ʼ`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+const catName = new Map(catalog.categories.map((c) => [c.slug, c]));
+const searchText = (p: Product) => {
+  const cat = catName.get(p.category);
+  const parent = cat?.parent ? catName.get(cat.parent) : undefined;
+  const attrs = Object.values(p.attributes ?? {}).flat();
+  return norm([p.name, p.sku, cat?.name, parent?.name, ...attrs].filter(Boolean).join(" "));
+};
 const catId = (slug: string) => `(SELECT id FROM categories WHERE slug = ${q(slug)})`;
 const prodId = (sku: string) => `(SELECT id FROM products WHERE sku = ${q(sku)})`;
 
@@ -125,9 +139,9 @@ sql.push(
 
 for (const p of catalog.products) {
   sql.push(
-    `INSERT INTO products (sku, slug, name, description, category_id, price, old_price, is_new, is_bestseller, sort, is_active)
-VALUES (${q(p.sku)}, ${q(p.slug)}, ${q(p.name)}, ${q(p.description)}, ${catId(p.category)}, ${kop(p.price)}, ${q(kop(p.oldPrice))}, ${q(!!p.isNew)}, ${q(!!p.isBestseller)}, ${p.sort ?? 0}, 1)
-ON CONFLICT (sku) DO UPDATE SET slug = excluded.slug, name = excluded.name, description = excluded.description, category_id = excluded.category_id, price = excluded.price, old_price = excluded.old_price, is_new = excluded.is_new, is_bestseller = excluded.is_bestseller, sort = excluded.sort, is_active = 1;`,
+    `INSERT INTO products (sku, slug, name, description, category_id, price, old_price, is_new, is_bestseller, sort, is_active, search_text)
+VALUES (${q(p.sku)}, ${q(p.slug)}, ${q(p.name)}, ${q(p.description)}, ${catId(p.category)}, ${kop(p.price)}, ${q(kop(p.oldPrice))}, ${q(!!p.isNew)}, ${q(!!p.isBestseller)}, ${p.sort ?? 0}, 1, ${q(searchText(p))})
+ON CONFLICT (sku) DO UPDATE SET slug = excluded.slug, name = excluded.name, description = excluded.description, category_id = excluded.category_id, price = excluded.price, old_price = excluded.old_price, is_new = excluded.is_new, is_bestseller = excluded.is_bestseller, sort = excluded.sort, is_active = 1, search_text = excluded.search_text;`,
   );
 
   const id = prodId(p.sku);
