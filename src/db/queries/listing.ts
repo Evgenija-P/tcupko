@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull, sql, type SQL } from "drizzle-orm";
 import type { ProductCardData } from "@/components/catalog/ProductCard";
 import { getDb } from "@/db";
 import { products } from "@/db/schema";
@@ -16,7 +16,7 @@ export type Scope = { categoryIds?: number[]; words?: string[] };
 
 export type FacetValue = { value: string; label: string; count: number };
 export type Facet = {
-  param: "f" | "size" | "tag";
+  param: "f" | "size" | "tag" | "cond";
   key: string;
   title: string;
   values: FacetValue[];
@@ -46,7 +46,12 @@ function filterWhere(p: ListingParams): SQL | undefined {
   const parts: (SQL | undefined)[] = [
     p.min ? sql`${products.price} >= ${Math.round(p.min * 100)}` : undefined,
     p.max ? sql`${products.price} <= ${Math.round(p.max * 100)}` : undefined,
-    p.sale ? isNotNull(products.oldPrice) : undefined,
+    p.sale ? and(isNotNull(products.oldPrice), isNull(products.defectNote)) : undefined,
+    p.conds.length === 1
+      ? p.conds[0] === "markdown"
+        ? isNotNull(products.defectNote)
+        : isNull(products.defectNote)
+      : undefined,
     p.isNew ? eq(products.isNew, true) : undefined,
     p.bestseller ? eq(products.isBestseller, true) : undefined,
     p.sizes.length
@@ -63,11 +68,13 @@ function filterWhere(p: ListingParams): SQL | undefined {
   return and(...parts);
 }
 
+// markdown ("уцінка") goes after new items, except when the visitor sorts by price
+const markdownLast = sql`${products.defectNote} IS NOT NULL`;
 const orderBy = {
-  popular: [desc(products.isBestseller), asc(products.sort), desc(products.id)],
+  popular: [markdownLast, desc(products.isBestseller), asc(products.sort), desc(products.id)],
   "price-asc": [asc(products.price), desc(products.id)],
   "price-desc": [desc(products.price), desc(products.id)],
-  new: [desc(products.isNew), desc(products.id)],
+  new: [markdownLast, desc(products.isNew), desc(products.id)],
 };
 
 export async function listProducts(
@@ -111,13 +118,26 @@ export async function getFacets(scope: Scope): Promise<Facets> {
       .select({
         min: sql<number>`coalesce(min(${products.price}), 0)`,
         max: sql<number>`coalesce(max(${products.price}), 0)`,
-        sale: sql<number>`count(${products.oldPrice})`,
+        sale: sql<number>`count(CASE WHEN ${products.oldPrice} IS NOT NULL AND ${products.defectNote} IS NULL THEN 1 END)`,
+        markdown: sql<number>`count(${products.defectNote})`,
+        total: sql<number>`count(*)`,
       })
       .from(products)
       .where(scopeWhere(scope)),
   ]);
 
   const groups: Facet[] = [];
+  if (bounds.markdown > 0 && bounds.markdown < bounds.total) {
+    groups.push({
+      param: "cond",
+      key: "cond",
+      title: "Стан",
+      values: [
+        { value: "new", label: "Новий", count: bounds.total - bounds.markdown },
+        { value: "markdown", label: "Уцінка", count: bounds.markdown },
+      ],
+    });
+  }
   if (tagRows.length >= 2)
     groups.push({ param: "tag", key: "tag", title: "Призначення", values: tagRows });
   if (sizes.length >= 2) {

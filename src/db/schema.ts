@@ -44,6 +44,12 @@ export const products = sqliteTable(
     sort: integer().notNull().default(0),
     isActive: integer({ mode: "boolean" }).notNull().default(true),
     /**
+     * Markdown ("уцінка"): a separate copy of a product with its own sku/price/stock.
+     * `defectNote` set ⇔ markdown item; its price is final (no order discount).
+     */
+    defectNote: text(),
+    originalId: integer().references((): AnySQLiteColumn => products.id),
+    /**
      * Lower-cased name + sku + category + attribute values (see `toSearchText`). SQLite's
      * LIKE/lower() are case-insensitive for ASCII only, so Cyrillic is normalised in JS.
      */

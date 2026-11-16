@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BadgePercent, Banknote, RotateCcw, Truck } from "lucide-react";
+import Link from "next/link";
+import { BadgePercent, Banknote, RotateCcw, TriangleAlert, Truck } from "lucide-react";
 import { Container } from "@/components/base/Container";
 import { JsonLd } from "@/components/base/JsonLd";
 import { Breadcrumbs, type Crumb } from "@/components/catalog/Breadcrumbs";
@@ -93,7 +94,11 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             <div className="flex min-w-0 flex-1 flex-col gap-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-wrap gap-2">
-                  {p.oldPrice && <Badge tone="sale">Акція</Badge>}
+                  {p.defectNote ? (
+                    <Badge tone="markdown">Уцінка</Badge>
+                  ) : (
+                    p.oldPrice && <Badge tone="sale">Акція</Badge>
+                  )}
                   {p.isNew && <Badge tone="new">Новинка</Badge>}
                   {p.isBestseller && <Badge tone="bestseller">Бестселер</Badge>}
                 </div>
@@ -117,16 +122,52 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
                 )}
               </p>
 
-              <div className="flex gap-3 rounded-lg bg-surface p-4 text-sm">
-                <BadgePercent className="size-5 shrink-0 text-ink-accent" aria-hidden />
-                <div className="flex flex-col gap-1">
-                  <p className="text-base font-medium">Знижка {DISCOUNT_PERCENT}% на замовлення</p>
-                  <p className="text-ink-muted">
-                    Від {DISCOUNT_MIN_QTY} шт цього товару — {formatPrice(discounted)} / шт, або на
-                    весь кошик від {formatPrice(DISCOUNT_MIN_SUBTOTAL)}. Рахується автоматично.
-                  </p>
+              {p.defectNote ? (
+                <div className="flex gap-3 rounded-lg border border-warning bg-accent-subtle p-4 text-sm">
+                  <TriangleAlert className="size-5 shrink-0 text-warning" aria-hidden />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-base font-medium">Чому дешевше</p>
+                    <p>{p.defectNote}</p>
+                    <p className="text-ink-muted">
+                      Ціна остаточна, загальна знижка на неї не діє. Повернення через описаний
+                      недолік не приймається, з інших причин — на загальних умовах.
+                    </p>
+                    {p.related[0] && (
+                      <Link
+                        href={`/product/${p.related[0].slug}`}
+                        className="font-medium text-ink-accent underline underline-offset-2"
+                      >
+                        Новий товар — {formatPrice(p.related[0].price)}
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="flex gap-3 rounded-lg bg-surface p-4 text-sm">
+                    <BadgePercent className="size-5 shrink-0 text-ink-accent" aria-hidden />
+                    <div className="flex flex-col gap-1">
+                      <p className="text-base font-medium">
+                        Знижка {DISCOUNT_PERCENT}% на замовлення
+                      </p>
+                      <p className="text-ink-muted">
+                        Від {DISCOUNT_MIN_QTY} шт цього товару — {formatPrice(discounted)} / шт, або
+                        на весь кошик від {formatPrice(DISCOUNT_MIN_SUBTOTAL)}. Рахується
+                        автоматично.
+                      </p>
+                    </div>
+                  </div>
+                  {p.related[0] && (
+                    <Link
+                      href={`/product/${p.related[0].slug}`}
+                      className="flex items-center gap-2 rounded-lg border border-line p-3 text-sm hover:bg-surface"
+                    >
+                      <Badge tone="markdown">Уцінка</Badge>Є вітринний екземпляр за{" "}
+                      {formatPrice(p.related[0].price)}
+                    </Link>
+                  )}
+                </>
+              )}
 
               <BuyBox name={p.name} sku={p.sku} variants={p.variants} sizeChart={p.sizeChart} />
 

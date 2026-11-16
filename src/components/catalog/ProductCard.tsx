@@ -21,6 +21,8 @@ export type ProductCardData = {
   image: { src: string; alt: string } | null;
   isNew: boolean;
   isBestseller: boolean;
+  /** "Уцінка": final price, no order discount */
+  isMarkdown: boolean;
 };
 
 export function ProductCard({ product: p }: { product: ProductCardData }) {
@@ -42,7 +44,11 @@ export function ProductCard({ product: p }: { product: ProductCardData }) {
           )}
         </Link>
         <div className="absolute top-2 right-14 left-2 flex flex-wrap gap-1">
-          {p.oldPrice && <Badge tone="sale">Акція</Badge>}
+          {p.isMarkdown ? (
+            <Badge tone="markdown">Уцінка</Badge>
+          ) : (
+            p.oldPrice && <Badge tone="sale">Акція</Badge>
+          )}
           {salePercent > 0 && <Badge tone="sale">−{salePercent}%</Badge>}
           {p.isNew && <Badge tone="new">Новинка</Badge>}
           {p.isBestseller && <Badge tone="bestseller">Бестселер</Badge>}
@@ -72,7 +78,9 @@ export function ProductCard({ product: p }: { product: ProductCardData }) {
           )}
         </p>
         <p className="text-xs text-ink-accent">
-          −{DISCOUNT_PERCENT}% від {DISCOUNT_MIN_QTY} шт
+          {p.isMarkdown
+            ? "Вітринний екземпляр, ціна остаточна"
+            : `−${DISCOUNT_PERCENT}% від ${DISCOUNT_MIN_QTY} шт`}
         </p>
       </div>
 

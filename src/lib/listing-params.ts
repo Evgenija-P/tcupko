@@ -21,6 +21,8 @@ export type ListingParams = {
   sizes: string[];
   tags: string[];
   sale: boolean;
+  /** ?cond=new|markdown (repeatable; both or none = no filter) */
+  conds: ("new" | "markdown")[];
   isNew: boolean;
   bestseller: boolean;
   sort: Sort;
@@ -51,6 +53,7 @@ export function parseListingParams(sp: RawSearchParams): ListingParams {
     sizes: list(sp.size),
     tags: list(sp.tag),
     sale: list(sp.sale)[0] === "1",
+    conds: list(sp.cond).filter((c): c is "new" | "markdown" => c === "new" || c === "markdown"),
     isNew: list(sp.new)[0] === "1",
     bestseller: list(sp.bestseller)[0] === "1",
     sort: sort && sort in SORTS ? (sort as Sort) : "popular",

@@ -22,6 +22,13 @@
       "when": 1794632293193,
       "tag": "0002_bright_klaw",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794825618483,
+      "tag": "0003_superb_masked_marvel",
+      "breakpoints": true
     }
   ]
 }

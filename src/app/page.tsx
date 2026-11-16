@@ -9,11 +9,12 @@ import { getCategoryTree, getShelf } from "@/db/queries/catalog";
 import { formatPrice } from "@/lib/format";
 
 export default async function HomePage() {
-  const [tree, sale, fresh, best] = await Promise.all([
+  const [tree, sale, fresh, best, markdown] = await Promise.all([
     getCategoryTree(),
     getShelf("sale"),
     getShelf("new"),
     getShelf("bestseller"),
+    getShelf("markdown"),
   ]);
 
   const shelves = [
@@ -34,6 +35,12 @@ export default async function HomePage() {
       title: "Бестселери",
       link: { href: "/catalog?bestseller=1", label: "Всі бестселери" },
       products: best,
+    },
+    {
+      id: "markdown",
+      title: "Уцінка",
+      link: { href: "/catalog?cond=markdown", label: "Вся уцінка" },
+      products: markdown,
     },
   ].filter((s) => s.products.length > 0);
 

@@ -2,6 +2,18 @@
   "_comment": "LOCAL DB ONLY (npm run db:seed:local). Fake products to develop the catalog; never seeded to production.",
   "products": [
     {
+      "markdownOf": "DEMO-002",
+      "price": 140,
+      "stock": 1,
+      "defect": "Вітринний екземпляр: припали пилом, шви й матеріал цілі"
+    },
+    {
+      "markdownOf": "DEMO-004",
+      "price": 18,
+      "stock": 25,
+      "defect": "Пошкоджене пакування, самі круги цілі"
+    },
+    {
       "sku": "DEMO-001",
       "slug": "demo-rukavytsi-brezentovi",
       "name": "[DEMO] Рукавиці брезентові з подвійним наладонником",

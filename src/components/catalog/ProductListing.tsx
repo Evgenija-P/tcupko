@@ -33,6 +33,10 @@ export async function ProductListing({ path, scope, searchParams: sp, keep = {} 
     ...(params.sale ? [{ label: "Зі знижкою", drop: ["sale"] as [string] }] : []),
     ...(params.isNew ? [{ label: "Новинки", drop: ["new"] as [string] }] : []),
     ...(params.bestseller ? [{ label: "Бестселери", drop: ["bestseller"] as [string] }] : []),
+    ...params.conds.map((c) => ({
+      label: c === "markdown" ? "Уцінка" : "Новий",
+      drop: ["cond", c] as [string, string],
+    })),
     ...params.sizes.map((s) => ({ label: `Розмір: ${s}`, drop: ["size", s] as [string, string] })),
     ...params.tags.map((t) => ({
       label:
@@ -54,7 +58,9 @@ export async function ProductListing({ path, scope, searchParams: sp, keep = {} 
       ? params.sizes.includes(value)
       : param === "tag"
         ? params.tags.includes(value)
-        : false;
+        : param === "cond"
+          ? (params.conds as string[]).includes(value)
+          : false;
 
   const filters = (
     <AutoSubmitForm

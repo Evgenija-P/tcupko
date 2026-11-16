@@ -44,6 +44,10 @@ document, this document wins.
 - Shipping days: Wednesday and Saturday, cut-off 11:00 Europe/Kyiv.
 - Discount: 10% on the whole order if any product qty ≥ 15 OR cart subtotal ≥ 3500 UAH;
   never stacked.
+- Markdown ("уцінка", `products.defect_note` set): a separate copy of a product with its own
+  sku/price/stock. Its price is FINAL — excluded from the 10% discount and from the discount
+  thresholds. Shown after new items; returns for the described defect are not accepted.
+  Data format for the owner: `docs/PRODUCTS.md`.
 - Stock is finite (sell-out, no restock): order decrements stock atomically, never below 0;
   `stock = 0` → product hidden from catalog and sitemap, product page 404.
 - Prices, discount and totals are computed **on the server** from the DB; the client sends

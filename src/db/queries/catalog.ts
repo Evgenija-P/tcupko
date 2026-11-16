@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { and, asc, desc, eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull, sql, type SQL } from "drizzle-orm";
 import type { ProductCardData } from "@/components/catalog/ProductCard";
 import { getDb } from "@/db";
 import { categories, products, type SizeChart } from "@/db/schema";
@@ -36,6 +36,7 @@ const cardFields = {
   oldPrice: products.oldPrice,
   isNew: products.isNew,
   isBestseller: products.isBestseller,
+  defectNote: products.defectNote,
   stock: stockSum,
   sizedVariants,
   firstVariantId,
@@ -56,6 +57,7 @@ function toCard(r: CardRow): ProductCardData {
     oldPrice: r.oldPrice,
     isNew: r.isNew,
     isBestseller: r.isBestseller,
+    isMarkdown: r.defectNote !== null,
     stock: r.stock,
     hasSizes: r.sizedVariants > 0,
     variantId: r.firstVariantId,
@@ -134,9 +136,11 @@ export async function getCategoryPage(slug: string): Promise<CategoryPage | null
 /** Exported for listing.ts — same card shape everywhere. */
 export { available, selectCards, toCard };
 
-type Shelf = "sale" | "new" | "bestseller";
+type Shelf = "sale" | "new" | "bestseller" | "markdown";
 const shelfWhere: Record<Shelf, SQL | undefined> = {
-  sale: isNotNull(products.oldPrice),
+  // markdown items have oldPrice too, but they are not "Акції"
+  sale: and(isNotNull(products.oldPrice), isNull(products.defectNote)),
+  markdown: isNotNull(products.defectNote),
   new: eq(products.isNew, true),
   bestseller: eq(products.isBestseller, true),
 };

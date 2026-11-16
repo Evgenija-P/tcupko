@@ -16,7 +16,15 @@ export default async function CatalogPage({ searchParams }: PageProps<"/catalog"
   const sp = await searchParams;
   const p = parseListingParams(sp);
   const tree = await getCategoryTree();
-  const title = p.sale ? "Акції" : p.isNew ? "Новинки" : p.bestseller ? "Бестселери" : "Каталог";
+  const title = p.sale
+    ? "Акції"
+    : p.isNew
+      ? "Новинки"
+      : p.bestseller
+        ? "Бестселери"
+        : p.conds.length === 1 && p.conds[0] === "markdown"
+          ? "Уцінка"
+          : "Каталог";
 
   return (
     <main className="flex-1 py-6">

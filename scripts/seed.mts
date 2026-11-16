@@ -36,7 +36,16 @@ type Product = {
   attributes?: Record<string, string | string[]>;
   variants: Variant[];
   images?: { path: string; alt: string }[];
+  /** markdown ("уцінка"): what is wrong with this copy */
+  defect?: string;
+  markdownOf?: string;
 };
+/**
+ * What the file may contain: `stock: N` is a shortcut for `variants: [{ stock: N }]`;
+ * a markdown entry `{ markdownOf: "<sku>", price, stock, defect }` copies everything else
+ * from the original (sku → "<sku>-У", slug → "<slug>-utsinka", oldPrice → original price).
+ */
+type RawProduct = Partial<Product> & { stock?: number };
 type Catalog = {
   categories: Category[];
   tags: { slug: string; name: string }[];
@@ -45,13 +54,47 @@ type Catalog = {
 
 // Several files are merged (e.g. catalog.json + demo-products.json for the local DB).
 const files = process.argv.slice(2);
-if (!files.length) throw new Error("Usage: node scripts/seed.mts <catalog.json> [more.jsonвЂ¦]");
+if (!files.length) throw new Error("Usage: node scripts/seed.mts <catalog.json> [more.json…]");
 const catalog: Catalog = { categories: [], tags: [], products: [] };
+const raw: RawProduct[] = [];
 for (const f of files) {
-  const part = JSON.parse(readFileSync(f, "utf8")) as Partial<Catalog>;
+  const part = JSON.parse(readFileSync(f, "utf8")) as Partial<Catalog> & {
+    products?: RawProduct[];
+  };
   catalog.categories.push(...(part.categories ?? []));
   catalog.tags.push(...(part.tags ?? []));
-  catalog.products.push(...(part.products ?? []));
+  raw.push(...(part.products ?? []));
+}
+
+// expand shortcuts and markdown copies into full products
+const bySku = new Map(raw.filter((p) => !p.markdownOf).map((p) => [p.sku, p]));
+for (const r of raw) {
+  const { stock, ...rest } = r;
+  const variants = r.variants ?? (stock !== undefined ? [{ stock }] : []);
+  if (!r.markdownOf) {
+    catalog.products.push({ ...rest, variants } as Product);
+    continue;
+  }
+  const o = bySku.get(r.markdownOf);
+  if (!o) {
+    console.error(`markdown ${r.sku ?? "?"}: original ${r.markdownOf} not found in the files`);
+    process.exit(1);
+  }
+  catalog.products.push({
+    category: o.category!,
+    description: o.description,
+    tags: o.tags,
+    attributes: o.attributes,
+    images: o.images,
+    ...rest,
+    sku: r.sku ?? `${o.sku}-У`,
+    slug: r.slug ?? `${o.slug}-utsinka`,
+    name: r.name ?? o.name!,
+    oldPrice: r.oldPrice ?? o.price,
+    isNew: false,
+    isBestseller: false,
+    variants,
+  } as Product);
 }
 
 // ---------- validation: fail loudly before touching the DB ----------
@@ -81,8 +124,10 @@ for (const p of catalog.products) {
     errors.push(`${at}: mix of sized and size-less variants`);
   for (const v of p.variants) {
     if (!Number.isInteger(v.stock) || v.stock < 0)
-      errors.push(`${at}: stock must be an integer в‰Ґ 0`);
+      errors.push(`${at}: stock must be an integer ≥ 0`);
   }
+  if (p.markdownOf && !p.defect?.trim()) errors.push(`${at}: markdown needs "defect"`);
+  if (p.defect && !p.markdownOf) errors.push(`${at}: "defect" only for markdown (markdownOf)`);
   for (const t of p.tags ?? []) if (!tagSlugs.has(t)) errors.push(`${at}: unknown tag ${t}`);
 }
 if (errors.length) {
@@ -137,11 +182,16 @@ sql.push(
   `UPDATE products SET is_active = 0 WHERE sku NOT IN (${catalog.products.map((p) => q(p.sku)).join(", ") || "''"});`,
 );
 
-for (const p of catalog.products) {
+// originals first, so a markdown copy can reference its original's id
+const productsOrdered = [...catalog.products].sort(
+  (a, b) => Number(!!a.markdownOf) - Number(!!b.markdownOf),
+);
+for (const p of productsOrdered) {
+  const text = searchText(p) + (p.markdownOf ? " уцінка" : "");
   sql.push(
-    `INSERT INTO products (sku, slug, name, description, category_id, price, old_price, is_new, is_bestseller, sort, is_active, search_text)
-VALUES (${q(p.sku)}, ${q(p.slug)}, ${q(p.name)}, ${q(p.description)}, ${catId(p.category)}, ${kop(p.price)}, ${q(kop(p.oldPrice))}, ${q(!!p.isNew)}, ${q(!!p.isBestseller)}, ${p.sort ?? 0}, 1, ${q(searchText(p))})
-ON CONFLICT (sku) DO UPDATE SET slug = excluded.slug, name = excluded.name, description = excluded.description, category_id = excluded.category_id, price = excluded.price, old_price = excluded.old_price, is_new = excluded.is_new, is_bestseller = excluded.is_bestseller, sort = excluded.sort, is_active = 1, search_text = excluded.search_text;`,
+    `INSERT INTO products (sku, slug, name, description, category_id, price, old_price, is_new, is_bestseller, sort, is_active, search_text, defect_note, original_id)
+VALUES (${q(p.sku)}, ${q(p.slug)}, ${q(p.name)}, ${q(p.description)}, ${catId(p.category)}, ${kop(p.price)}, ${q(kop(p.oldPrice))}, ${q(!!p.isNew)}, ${q(!!p.isBestseller)}, ${p.sort ?? 0}, 1, ${q(text)}, ${q(p.defect?.trim())}, ${p.markdownOf ? prodId(p.markdownOf) : "NULL"})
+ON CONFLICT (sku) DO UPDATE SET slug = excluded.slug, name = excluded.name, description = excluded.description, category_id = excluded.category_id, price = excluded.price, old_price = excluded.old_price, is_new = excluded.is_new, is_bestseller = excluded.is_bestseller, sort = excluded.sort, is_active = 1, search_text = excluded.search_text, defect_note = excluded.defect_note, original_id = excluded.original_id;`,
   );
 
   const id = prodId(p.sku);

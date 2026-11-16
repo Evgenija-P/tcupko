@@ -29,6 +29,10 @@ export type ProductPage = {
   category: CategoryNode;
   parentCategory: CategoryNode | null;
   sizeChart: string[][] | null;
+  /** set ⇔ markdown item */
+  defectNote: string | null;
+  /** markdown → its available original; original → its available markdown copies */
+  related: { slug: string; price: number }[];
 };
 
 /** Active product by slug (even when sold out — the page then says so); null → 404. */
@@ -78,7 +82,16 @@ export async function getProductPage(slug: string): Promise<ProductPage | null> 
     charts.find((c) => c.id === parentCategory?.id)?.chart ??
     null;
 
+  const related = await db
+    .select({ slug: products.slug, price: products.price })
+    .from(products)
+    .where(
+      and(available, p.originalId ? eq(products.id, p.originalId) : eq(products.originalId, p.id)),
+    );
+
   return {
+    defectNote: p.defectNote,
+    related,
     id: p.id,
     slug: p.slug,
     sku: p.sku,
